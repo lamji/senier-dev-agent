@@ -51,6 +51,8 @@ This repository includes pre-configured rule files for popular AI IDEs to automa
 - **Windsurf**: `.windsurfrules` ensures synchronization with the knowledge base.
 - **Roo Code / Cline**: `.clinerules` enforces the RAG search protocol.
 - **Kilo Code**: `.kilocode/rules/rag-standard.md` provides deep integration for Kilo agents.
+- **Codex / Open Agents**: `AGENTS.md` provides instructions via the open standard.
+- **GitHub Copilot**: `.github/copilot-instructions.md` handles workspace-level context.
 
 When you open this project in any of these IDEs, the agent will see these instructions and automatically start using your "Senior Dev Mind".
 
