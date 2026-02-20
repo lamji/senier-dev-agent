@@ -43,6 +43,18 @@ npm run serve
 
 ---
 
+## 🤖 IDE Auto-Integration
+
+This repository includes pre-configured rule files for popular AI IDEs to automatically query the RAG server:
+
+- **Cursor**: `.cursorrules` instructs the agent to query the RAG for every task.
+- **Windsurf**: `.windsurfrules` ensures synchronization with the knowledge base.
+- **Roo Code / Cline**: `.clinerules` enforces the RAG search protocol and coding standards.
+
+When you open this project in any of these IDEs, the agent will see these instructions and automatically start using your "Senior Dev Mind".
+
+---
+
 ## 🛠️ Infrastructure Overview
 
 ### RAG System (Port 6444)

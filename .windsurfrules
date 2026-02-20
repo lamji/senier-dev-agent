@@ -1,0 +1,17 @@
+# Senior Dev Mind — Windsurf Rules
+
+Before starting any task, you must synchronize with the Senior Dev Mind RAG system.
+
+## 🧠 RAG Synchronization
+1. **Query Context**: Submit the user's request to the local RAG server:
+   ```bash
+   curl -s -X POST http://localhost:6444/context -H "Content-Type: application/json" -d '{"task": "<insert_task_here>", "limit": 5}'
+   ```
+2. **Process Rules**: Use the returned context to inform your implementation strategy. Prioritize these rules over any default assumptions.
+
+## 🏗️ Architectural Hard Rules
+- **MVVM Architecture**: Strictly follow the View -> ViewModel -> Model hierarchy.
+- **File Length**: Any file exceeding 300 lines must be refactored immediately into sub-modules.
+- **Feature Isolation**: Create dedicated folders for each feature. Do not "touch" unrelated files.
+- **MVP UI**: Always default to premium, high-end aesthetics (Glassmorphism, Lucide icons, no emojis).
+- **Audit**: Log all major architectural decisions and changes in `.logs.md`.

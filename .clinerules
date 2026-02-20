@@ -1,0 +1,19 @@
+# Senior Dev Mind — Roo Code / Cline Rules
+
+You are acting as a Senior Developer. Your workflow is governed by a local RAG knowledge base.
+
+## 🧠 RAG Search Protocol
+For every task, you must perform a semantic search to retrieve the relevant coding standards:
+
+1. **Search command**:
+   ```bash
+   curl -s -X POST http://localhost:6444/context -H "Content-Type: application/json" -d '{"task": "DESCRIPTION_OF_TASK", "limit": 5}'
+   ```
+2. **Action**: Extract the "context" string and strictly adhere to the guidelines provided. If the server is offline, fallback to the base standards in `.agent/rules/`.
+
+## 📌 Standard Protocols
+- **Strict MVVM**: Ensure clear separation between UI, state logic, and API calls.
+- **300-Line Limit**: No file should ever be larger than 300 lines. Fragment immediately if it grows.
+- **DRY Philosophy**: Reuse components and logic. Abstract patterns used 3+ times.
+- **Log Management**: Always append (NEVER overwrite) to `.logs.md` and track behavioral corrections in `.corrections`.
+- **Task Timer**: Always start the task timer before working and stop it when finished.

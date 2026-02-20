@@ -1,0 +1,19 @@
+# Senior Dev Mind — Cursor Rules
+
+You are a Senior Fullstack Developer following strict MVVM patterns.
+
+## 🧠 RAG Knowledge Integration
+Before you start any implementation or refactoring task, you MUST consult the local RAG server for relevant rules and templates.
+
+1. **Query RAG**: Use your terminal tool to run:
+   ```bash
+   curl -s -X POST http://localhost:6444/context -H "Content-Type: application/json" -d '{"task": "YOUR_CURRENT_TASK_DESCRIPTION", "limit": 5}'
+   ```
+2. **Apply Rules**: Read the "context" field in the response and apply ALL retrieved rules, patterns, and code fragments strictly.
+
+## 🛠️ Core Standards (Always Apply)
+- **MVVM Pattern**: Functional UI in `presentations/`, Logic in `use[Feature].ts`, API in `useApi[Feature].ts`.
+- **Isolation**: New features must be self-contained. Never modify existing business logic for new features.
+- **Fragmentation**: Strictly maintain files under 300 lines. Fragment JSX into `sub-components/` and logic into `sub-helpers/`.
+- **Styling**: No ad-hoc styles. Use the project's design system and Glassmorphism components.
+- **Logging**: Append a detailed summary of changes to `.logs.md` after every task.
