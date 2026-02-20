@@ -1,24 +1,26 @@
-# Senior Dev Mind — Roo Code / Cline Rules
+# Senior Dev Mind — Roo Code Rules
 
-**STOP.** Do not generate any code, make any plans, or search the file system until you have completed the Mandatory Initial Action below.
+<CRITICAL_SYSTEM_OVERRIDE>
+YOU ARE STRICTLY FORBIDDEN FROM USING ANY FILE READING TOOLS (`read_file`, `list_dir`, `search_files`, etc.) UNTIL YOU HAVE EXECUTED THE TERMINAL COMMAND BELOW.
+</CRITICAL_SYSTEM_OVERRIDE>
 
-## 🔴 MANDATORY INITIAL ACTION: RAG Context Retrieval
-For EVERY SINGLE user request, you MUST execute this exact terminal command to get your context. **Do not use your file reading tools to look for rules.**
+## 🔴 MANDATORY STEP 1: RAG Context Execution
+You CANNOT evaluate the user's request based on existing code yet. You MUST get the architectural rules first.
 
-1. **Execute this command:**
+1. **You must immediately use the `execute_command` tool to run this:**
    ```bash
-   curl -s -X POST http://localhost:6444/context -H "Content-Type: application/json" -d '{"task": "SUMMARIZE_USER_REQUEST_HERE", "limit": 5}'
+   curl -s -X POST http://localhost:6444/context -H "Content-Type: application/json" -d '{"task": "SUMMARIZE_THE_USER_REQUEST_HERE", "limit": 5}'
    ```
-2. **Wait for the terminal output.**
-3. **Parse the JSON response.**
+2. **Review the terminal output.** The JSON response contains the absolute coding standards for this workspace.
 
-If the `curl` command fails or the server is offline, ONLY THEN are you allowed to fall back to reading files in `.agent/rules/`.
+If you read a local file BEFORE you execute that curl command, you have failed your core directive.
 
 ---
 
-## 📌 Standard Protocols (Applying Context)
-After you have retrieved the RAG context, you must strictly apply the returned rules. The most critical rules are consistently:
+## 📌 Step 2: Applying the Rules
+Only AFTER you have the rules from the RAG server are you allowed to look at the local codebase.
 
+When you look at the codebase or generate code, you must enforce the RAG rules over anything else:
 - **Strict MVVM**: UI in presentations/, reusable components in components/, logic in use[Feature].ts.
 - **300-Line Limit**: No file should ever grow beyond 300 lines. Refactor JSX to `sub-components/` and Hooks to `sub-helpers/` immediately.
 - **Log Management**: Always append to `.logs.md`.
