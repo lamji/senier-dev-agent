@@ -12,6 +12,7 @@ config({ path: resolve(__dirname, '..', '.env') });
 export const CONFIG = {
   // Qdrant
   qdrantUrl: process.env.QDRANT_URL || 'http://localhost:6333',
+  qdrantApiKey: process.env.QDRANT_API_KEY || '',
   collection: process.env.QDRANT_COLLECTION || 'senior_dev_mind',
   vectorSize: parseInt(process.env.VECTOR_SIZE || '768', 10),
 

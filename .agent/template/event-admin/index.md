@@ -1,97 +1,136 @@
-# Event Admin — View (index.tsx)
+# Professional Admin View (Multi-View Standard)
 
-> **Role**: Admin Dashboard — renders metrics and booking table.
-> **Location**: `presentations/Admin/index.tsx`
+This component implements a state-driven view switcher for the Admin Panel.
+
+## File Version: 2026-02-20 (Refined Analytics - Minimalist Header)
 
 ```tsx
 "use client";
 
-import { motion } from "framer-motion";
-import { RefreshCw } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Skeleton } from "@/components/ui/skeleton";
-import { useAdmin } from "./useAdmin";
+import { useAdminContext } from "./AdminProvider";
 import { BookingTable } from "./sub-components/BookingTable";
-
-/**
- * AdminPresentation — THE VIEW for admin dashboard
- *
- * Renders booking list using TanStack Table with filter tabs and actions.
- * USES DIV INSTEAD OF CARD PER CODING STANDARDS.
- */
+import {
+    Users,
+    CalendarCheck,
+    CreditCard,
+    TrendingUp,
+    Filter,
+    FileDown,
+    Plus,
+    LayoutDashboard
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { formatPHP } from "@/lib/format";
 
 export default function AdminPresentation() {
-    const vm = useAdmin();
+    const {
+        bookings,
+        updateStatus,
+        updatingId,
+        pendingCount,
+        approvedCount,
+        currentView
+    } = useAdminContext();
 
+    // DASHBOARD VIEW (Analytics + 5 Recent)
+    if (currentView === "DASHBOARD") {
+        const stats = [
+            { label: "Total Bookings", value: bookings.length, icon: CalendarCheck, color: "text-blue-600", bg: "bg-blue-50" },
+            { label: "Pending Approval", value: pendingCount, icon: Users, color: "text-amber-600", bg: "bg-amber-50" },
+            { label: "Completed Events", value: approvedCount, icon: TrendingUp, color: "text-emerald-600", bg: "bg-emerald-50" },
+            { label: "Revenue Stream", value: formatPHP(approvedCount * 1500), icon: CreditCard, color: "text-indigo-600", bg: "bg-indigo-50" },
+        ];
+
+        return (
+            <div className="space-y-10 animate-in fade-in duration-700">
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+                    <div className="space-y-1">
+                        <h1 className="text-2xl font-bold tracking-tight text-slate-900">Dashboard</h1>
+                        <p className="text-sm text-slate-500 font-medium">Daily analytics and recent activity overview.</p>
+                    </div>
+
+                    <div className="flex items-center gap-3">
+                    </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    {stats.map((stat) => (
+                        <div key={stat.label} className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm flex items-center gap-5 transition-all hover:shadow-md">
+                            <div className={`h-12 w-12 rounded-lg ${stat.bg} ${stat.color} flex items-center justify-center`}>
+                                <stat.icon className="h-6 w-6" />
+                            </div>
+                            <div className="space-y-0.5">
+                                <p className="text-xs font-bold text-slate-500 uppercase tracking-wider">{stat.label}</p>
+                                <p className="text-2xl font-black text-slate-900">{stat.value}</p>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+
+                <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                        <h2 className="text-lg font-bold text-slate-800">Recent 5 Bookings</h2>
+                        <span className="text-xs font-medium text-slate-400">Registry Snapshot</span>
+                    </div>
+
+                    <BookingTable
+                        data={bookings.slice(0, 5)}
+                        onUpdateStatus={updateStatus}
+                        updatingId={updatingId}
+                        hidePagination={true}
+                    />
+                </div>
+            </div>
+        );
+    }
+
+    // REGISTRY / BOOKINGS VIEW (Full List)
+    if (currentView === "BOOKINGS") {
+        return (
+            <div className="space-y-10 animate-in fade-in duration-700">
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+                    <div className="space-y-1">
+                        <h1 className="text-2xl font-bold tracking-tight text-slate-900">Bookings Registry</h1>
+                        <p className="text-sm text-slate-500 font-medium">The complete ledger of all event registrations.</p>
+                    </div>
+
+                    <div className="flex items-center gap-3">
+                        <Button variant="outline" className="h-10 gap-2 font-semibold text-slate-600 border-slate-200">
+                            <Filter className="h-4 w-4" />
+                            Filters
+                        </Button>
+                        <Button variant="outline" className="h-10 gap-2 font-semibold text-slate-600 border-slate-200">
+                            <FileDown className="h-4 w-4" />
+                            Export
+                        </Button>
+                    </div>
+                </div>
+
+                <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                        <h2 className="text-lg font-bold text-slate-800">Master Record</h2>
+                        <span className="text-xs font-medium text-slate-400">Total Entries: {bookings.length}</span>
+                    </div>
+
+                    <BookingTable
+                        data={bookings}
+                        onUpdateStatus={updateStatus}
+                        updatingId={updatingId}
+                    />
+                </div>
+            </div>
+        );
+    }
+
+    // FALLBACK / OTHER VIEWS
     return (
-        <div className="py-10 px-6">
-            <div className="max-w-6xl mx-auto">
-                {/* Header */}
-                <div className="flex items-center justify-between mb-8">
-                    <div>
-                        <h1 className="text-3xl font-bold tracking-tight text-white">Dashboard</h1>
-                        <p className="text-sm text-zinc-400">
-                            Real-time analytics and booking management.
-                        </p>
-                    </div>
-                    <Button
-                        variant="outline"
-                        onClick={vm.fetchBookings}
-                        disabled={vm.isLoading}
-                        className="border-zinc-800 bg-zinc-900/50 text-zinc-300 hover:text-white"
-                    >
-                        <RefreshCw
-                            className={`mr-2 h-4 w-4 ${vm.isLoading ? "animate-spin" : ""}`}
-                        />
-                        Sync Data
-                    </Button>
-                </div>
-
-                {/* Analytics Metrics (Native Divs instead of Cards) */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                    <div className="rounded-xl border border-amber-500/20 bg-amber-500/5 p-6 backdrop-blur-sm">
-                        <p className="text-xs font-semibold text-amber-500/80 uppercase tracking-wider mb-2">Pending</p>
-                        <div className="text-3xl font-bold text-white">{vm.pendingCount}</div>
-                    </div>
-                    <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/5 p-6 backdrop-blur-sm">
-                        <p className="text-xs font-semibold text-emerald-500/80 uppercase tracking-wider mb-2">Approved</p>
-                        <div className="text-3xl font-bold text-white">{vm.approvedCount}</div>
-                    </div>
-                    <div className="rounded-xl border border-red-500/20 bg-red-500/5 p-6 backdrop-blur-sm">
-                        <p className="text-xs font-semibold text-red-500/80 uppercase tracking-wider mb-2">Canceled</p>
-                        <div className="text-3xl font-bold text-white">{vm.canceledCount}</div>
-                    </div>
-                </div>
-
-                {/* Filter Tabs */}
-                <Tabs value={vm.filter} onValueChange={vm.setFilter} className="mb-6">
-                    <TabsList className="bg-zinc-900 border border-zinc-800">
-                        <TabsTrigger value="all" className="data-[state=active]:bg-zinc-800">All</TabsTrigger>
-                        <TabsTrigger value="pending" className="data-[state=active]:bg-amber-500/20 text-amber-500/80">Pending</TabsTrigger>
-                        <TabsTrigger value="approved" className="data-[state=active]:bg-emerald-500/20 text-emerald-500/80">Approved</TabsTrigger>
-                        <TabsTrigger value="canceled" className="data-[state=active]:bg-red-500/20 text-red-500/80">Canceled</TabsTrigger>
-                    </TabsList>
-                </Tabs>
-
-                {/* Table Section */}
-                {vm.isLoading ? (
-                    <div className="space-y-4">
-                        <Skeleton className="h-10 w-full bg-zinc-900" />
-                        <Skeleton className="h-40 w-full bg-zinc-900" />
-                    </div>
-                ) : (
-                    <motion.div
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                    >
-                        <BookingTable
-                            data={vm.bookings}
-                            onUpdateStatus={vm.updateStatus}
-                            updatingId={vm.updatingId}
-                        />
-                    </motion.div>
-                )}
+        <div className="h-[60vh] flex flex-col items-center justify-center text-center space-y-4">
+            <div className="h-16 w-16 rounded-full bg-slate-50 flex items-center justify-center text-slate-300">
+                <LayoutDashboard className="h-8 w-8" />
+            </div>
+            <div className="space-y-1">
+                <h2 className="text-xl font-bold text-slate-900">{currentView} Module</h2>
+                <p className="text-sm text-slate-500">This professional module is currently being synchronized.</p>
             </div>
         </div>
     );

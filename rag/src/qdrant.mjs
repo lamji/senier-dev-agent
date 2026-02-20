@@ -10,7 +10,11 @@ let client = null;
 /** Get or create the Qdrant client singleton */
 export function getClient() {
   if (!client) {
-    client = new QdrantClient({ url: CONFIG.qdrantUrl });
+    const opts = { url: CONFIG.qdrantUrl };
+    if (CONFIG.qdrantApiKey) {
+      opts.apiKey = CONFIG.qdrantApiKey;
+    }
+    client = new QdrantClient(opts);
   }
   return client;
 }

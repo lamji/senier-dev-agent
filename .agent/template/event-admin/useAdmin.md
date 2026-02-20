@@ -1,24 +1,16 @@
-# Event Admin — ViewModel (useAdmin.ts)
-
-> **Role**: Admin logic — data fetching, status updates, and metrics calculation.
-> **Location**: `presentations/Admin/useAdmin.ts`
+# Professional Admin ViewModel Standard
 
 ```ts
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { useSocket } from "@/lib/hooks/useSocket";
 import api from "@/lib/axios";
 import type { IBooking } from "@/types/booking";
 
-/**
- * useAdmin — ViewModel for Admin Dashboard
- *
- * Handles fetching bookings, updating status, and calculating analytics.
- * Pure logic, no JSX. (MVVM coding-standard.md)
- */
-
 export function useAdmin() {
   const [bookings, setBookings] = useState<IBooking[]>([]);
+  const { socket, emit } = useSocket();
   const [isLoading, setIsLoading] = useState(true);
   const [filter, setFilter] = useState<string>("all");
   const [updatingId, setUpdatingId] = useState<string | null>(null);
@@ -32,7 +24,7 @@ export function useAdmin() {
       const res = await api.get("/api/bookings", { params });
       setBookings(res.data.bookings);
     } catch (error) {
-      console.error("[Admin] VM Error:", error);
+      console.error("[Admin] Failed to fetch bookings:", error);
     } finally {
       setIsLoading(false);
     }
@@ -42,26 +34,46 @@ export function useAdmin() {
     fetchBookings();
   }, [fetchBookings]);
 
+  useEffect(() => {
+    if (!socket) return;
+    
+    socket.emit("join-admin");
+
+    const onNewBooking = (bookingData: unknown) => {
+      fetchBookings();
+    };
+
+    const onBookingUpdate = (updateData: unknown) => {
+      fetchBookings();
+    };
+
+    socket.on("new-booking", onNewBooking);
+    socket.on("booking-update", onBookingUpdate);
+
+    return () => {
+      socket.off("new-booking", onNewBooking);
+      socket.off("booking-update", onBookingUpdate);
+    };
+  }, [socket, fetchBookings]);
+
   const updateStatus = useCallback(
     async (id: string, status: "approved" | "canceled") => {
       setUpdatingId(id);
       try {
         await api.patch(`/api/bookings/${id}`, { status });
-
-        // Optimistic update for responsiveness
+        emit("booking-update", { id, status });
         setBookings((prev) =>
           prev.map((b) => (b._id === id ? { ...b, status } : b))
         );
       } catch (error) {
-        console.error("[Admin] Status Update Error:", error);
+        console.error("[Admin] Failed to update booking:", error);
       } finally {
         setUpdatingId(null);
       }
     },
-    []
+    [emit]
   );
 
-  // Analytical Metrics for Dashboard
   const pendingCount = bookings.filter((b) => b.status === "pending").length;
   const approvedCount = bookings.filter((b) => b.status === "approved").length;
   const canceledCount = bookings.filter((b) => b.status === "canceled").length;

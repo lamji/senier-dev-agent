@@ -1,107 +1,128 @@
-# Event Admin — Layout & Sidebar (AdminLayout.tsx)
-
-> **Role**: Sidenav navigation and page wrapping.
-> **Location**: `presentations/Admin/AdminLayout.tsx`
+# Professional Admin Layout Standard
 
 ```tsx
 "use client";
 
-import * as React from "react";
-import {
-    Calendar,
-    LayoutDashboard,
-    LogOut,
-} from "lucide-react";
+import React from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
-import {
-    Sidebar,
-    SidebarContent,
-    SidebarFooter,
-    SidebarGroup,
-    SidebarGroupContent,
-    SidebarGroupLabel,
-    SidebarHeader,
-    SidebarMenu,
-    SidebarMenuButton,
-    SidebarMenuItem,
-    SidebarProvider,
-    SidebarTrigger,
-    SidebarInset,
-} from "@/components/ui/sidebar";
-
-/**
- * NAV_ITEMS STRICTLY LIMITED TO 2 LINKS FOR MVP
- */
-const NAV_ITEMS = [
-    { title: "Dashboard", url: "/admin", icon: LayoutDashboard },
-    { title: "Bookings", url: "/admin", icon: Calendar },
-];
-
-export function AdminSidebar() {
-    return (
-        <Sidebar collapsible="icon">
-            <SidebarHeader className="h-16 flex items-center px-4 border-b border-sidebar-border bg-black">
-                <div className="flex items-center gap-2 font-bold text-xl text-white">
-                    <div className="bg-amber-500 p-1.5 rounded-lg text-black">
-                        <Calendar className="h-5 w-5" />
-                    </div>
-                    <span>book<span className="text-amber-500">.me</span></span>
-                </div>
-            </SidebarHeader>
-
-            <SidebarContent className="bg-black">
-                <SidebarGroup>
-                    <SidebarGroupLabel className="text-zinc-500">MVP MANAGEMENT</SidebarGroupLabel>
-                    <SidebarGroupContent>
-                        <SidebarMenu>
-                            {NAV_ITEMS.map((item) => (
-                                <SidebarMenuItem key={item.title}>
-                                    <SidebarMenuButton asChild tooltip={item.title} className="text-zinc-300 hover:text-white hover:bg-zinc-900">
-                                        <a href={item.url}>
-                                            <item.icon />
-                                            <span>{item.title}</span>
-                                        </a>
-                                    </SidebarMenuButton>
-                                </SidebarMenuItem>
-                            ))}
-                        </SidebarMenu>
-                    </SidebarGroupContent>
-                </SidebarGroup>
-            </SidebarContent>
-
-            <SidebarFooter className="border-t border-sidebar-border bg-black">
-                <SidebarMenu>
-                    <SidebarMenuItem>
-                        <SidebarMenuButton
-                            onClick={() => signOut({ callbackUrl: "/" })}
-                            className="text-red-400 hover:text-red-500 hover:bg-red-500/10"
-                        >
-                            <LogOut />
-                            <span>Log out</span>
-                        </SidebarMenuButton>
-                    </SidebarMenuItem>
-                </SidebarMenu>
-            </SidebarFooter>
-        </Sidebar>
-    );
-}
+import { 
+    LayoutDashboard, 
+    Calendar, 
+    Users, 
+    LogOut, 
+    Bell, 
+    Search,
+    PlusCircle,
+    Package,
+    MessageSquare,
+    ClipboardList,
+    Briefcase
+} from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
+    const pathname = usePathname();
+
+    const menuItems = [
+        { group: "General", items: [
+            { icon: LayoutDashboard, label: "Dashboard", href: "/admin" },
+            { icon: Users, label: "Customers", href: "/admin" },
+        ]},
+        { group: "Work", items: [
+            { icon: ClipboardList, label: "Bookings", href: "/admin" },
+            { icon: Briefcase, label: "Projects", href: "/admin" },
+            { icon: Package, label: "Add-ons", href: "/admin" },
+        ]},
+        { group: "Engagement", items: [
+            { icon: MessageSquare, label: "Messages", href: "/admin" },
+            { icon: Bell, label: "Notices", href: "/admin" },
+            { icon: Calendar, label: "Events", href: "/admin" },
+        ]},
+    ];
+
     return (
-        <SidebarProvider>
-            <AdminSidebar />
-            <SidebarInset className="bg-zinc-950">
-                <header className="flex h-16 shrink-0 items-center border-b border-zinc-900 px-6 sticky top-0 bg-black/80 backdrop-blur-sm z-50 justify-between">
-                    <SidebarTrigger className="text-white" />
-                    <div className="text-xs font-medium text-zinc-500 italic">
-                        SECURE ADMIN PANEL
+        <div className="flex min-h-screen bg-[#f8fafc] text-slate-900 font-sans antialiased">
+            <aside className="w-[260px] bg-[#1e293b] text-slate-300 flex flex-col fixed h-full z-50">
+                <div className="p-6 flex items-center gap-3">
+                    <div className="h-8 w-8 rounded bg-blue-600 flex items-center justify-center">
+                        <span className="font-bold text-white text-lg">B</span>
+                    </div>
+                    <span className="font-bold text-white text-xl tracking-tight">BOOK.ME</span>
+                </div>
+
+                <div className="flex-1 overflow-y-auto px-4 py-6 space-y-8">
+                    {menuItems.map((group) => (
+                        <div key={group.group} className="space-y-2">
+                            <h3 className="px-2 text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+                                {group.group}
+                            </h3>
+                            <nav className="space-y-1">
+                                {group.items.map((item) => (
+                                    <Link
+                                        key={item.label}
+                                        href={item.href}
+                                        className={`flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors hover:bg-slate-800 hover:text-white ${
+                                            pathname === item.href && item.label === "Dashboard" ? "bg-slate-800 text-white" : ""
+                                        }`}
+                                    >
+                                        <item.icon className="h-4 w-4" />
+                                        {item.label}
+                                    </Link>
+                                ))}
+                            </nav>
+                        </div>
+                    ))}
+                </div>
+
+                <div className="p-4 border-t border-slate-800">
+                    <button 
+                        onClick={() => signOut({ callbackUrl: "/" })}
+                        className="flex items-center gap-3 px-3 py-2 w-full text-sm font-medium text-slate-400 hover:text-white transition-colors"
+                    >
+                        <LogOut className="h-4 w-4" />
+                        Sign Out
+                    </button>
+                </div>
+            </aside>
+
+            <div className="flex-1 ml-[260px] flex flex-col">
+                <header className="h-[70px] bg-white border-b border-slate-200 px-8 flex items-center justify-between sticky top-0 z-40">
+                    <div className="flex items-center gap-4 flex-1">
+                        <div className="relative w-full max-w-md">
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                            <Input 
+                                placeholder="Search everything..." 
+                                className="pl-10 h-10 bg-slate-50 border-none shadow-none focus-visible:ring-1 focus-visible:ring-blue-500"
+                            />
+                        </div>
+                    </div>
+
+                    <div className="flex items-center gap-4">
+                        <Button variant="ghost" size="icon" className="text-slate-500 hover:text-slate-900 rounded-full">
+                            <PlusCircle className="h-5 w-5" />
+                        </Button>
+                        <Button variant="ghost" size="icon" className="text-slate-500 hover:text-slate-900 rounded-full">
+                            <Bell className="h-5 w-5" />
+                        </Button>
+                        <div className="h-4 w-[1px] bg-slate-200 mx-2" />
+                        <div className="flex items-center gap-3 pl-2">
+                             <div className="text-right hidden sm:block">
+                                <p className="text-sm font-bold leading-none">Admin User</p>
+                                <p className="text-[10px] text-slate-500 font-medium">Administrator</p>
+                             </div>
+                             <div className="h-9 w-9 rounded-full bg-slate-200" />
+                        </div>
                     </div>
                 </header>
-                <main className="flex-1">
+
+                <main className="p-8">
                     {children}
                 </main>
-            </SidebarInset>
-        </SidebarProvider>
+            </div>
+        </div>
     );
 }
 ```
