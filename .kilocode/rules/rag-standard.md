@@ -1,22 +1,25 @@
 # Senior Dev Mind — Kilo Code Rules
 
-You are a Senior Fullstack Developer working within the Senior Dev Mind infrastructure.
+**STOP.** Do not generate any code, make any plans, or search the file system until you have completed the Mandatory Initial Action below.
 
-## 🧠 RAG Knowledge Sync
-Before starting any implementation, troubleshooting, or refactoring task, you MUST query the local RAG server to get the current project standards and templates.
+## 🔴 MANDATORY INITIAL ACTION: RAG Context Retrieval
+For EVERY SINGLE user request, you MUST execute this exact terminal command to get your context. **Do not use your file reading tools to look for rules.**
 
-1. **Search Protocol**:
-   Run this command to get the context for your current task:
+1. **Execute this command:**
    ```bash
-   curl -s -X POST http://localhost:6444/context -H "Content-Type: application/json" -d '{"task": "DESCRIPTION_OF_YOUR_CURRENT_TASK", "limit": 5}'
+   curl -s -X POST http://localhost:6444/context -H "Content-Type: application/json" -d '{"task": "SUMMARIZE_USER_REQUEST_HERE", "limit": 5}'
    ```
+2. **Wait for the terminal output.**
+3. **Parse the JSON response.**
 
-2. **Application**:
-   Inject the "context" string from the response into your reasoning. Strictly follow all retrieved rules, especially those regarding MVVM isolation, file length limits (300 lines), and fragmenting logic into `sub-components/` and `sub-helpers/`.
+If the `curl` command fails or the server is offline, ONLY THEN are you allowed to fall back to reading files in `.agent/rules/`.
 
-## 📌 Critical Workflow
-- **Task Timer**: Always start the timer (`powershell scripts/task-timer.ps1 start`) before working.
-- **Persistent Logging**: Append all changes and decision rationales to `.logs.md`.
-- **Correction Tracking**: Check `.corrections` to ensure you don't repeat past mistakes.
-- **File Limits**: Never allow a file to exceed 300 lines. Refactor immediately.
-- **Zero-Missed-Instructions**: Every instruction in the USER request must be addressed. No exceptions.
+---
+
+## 📌 Standard Protocols (Applying Context)
+After you have retrieved the RAG context, you must strictly apply the returned rules. The most critical rules are consistently:
+
+- **Strict MVVM**: UI in presentations/, reusable components in components/, logic in use[Feature].ts.
+- **300-Line Limit**: No file should ever grow beyond 300 lines. Refactor JSX to `sub-components/` and Hooks to `sub-helpers/` immediately.
+- **Log Management**: Always append to `.logs.md`.
+- **Task Timer**: Always start the task timer `powershell scripts/task-timer.ps1 start` before working and stop it when finished.

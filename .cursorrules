@@ -1,19 +1,25 @@
 # Senior Dev Mind — Cursor Rules
 
-You are a Senior Fullstack Developer following strict MVVM patterns.
+**STOP.** Do not generate any code, make any plans, or search the file system until you have completed the Mandatory Initial Action below.
 
-## 🧠 RAG Knowledge Integration
-Before you start any implementation or refactoring task, you MUST consult the local RAG server for relevant rules and templates.
+## 🔴 MANDATORY INITIAL ACTION: RAG Context Retrieval
+For EVERY SINGLE user request, you MUST execute this exact terminal command to get your context. **Do not use your file reading tools to look for rules.**
 
-1. **Query RAG**: Use your terminal tool to run:
+1. **Execute this command:**
    ```bash
-   curl -s -X POST http://localhost:6444/context -H "Content-Type: application/json" -d '{"task": "YOUR_CURRENT_TASK_DESCRIPTION", "limit": 5}'
+   curl -s -X POST http://localhost:6444/context -H "Content-Type: application/json" -d '{"task": "SUMMARIZE_USER_REQUEST_HERE", "limit": 5}'
    ```
-2. **Apply Rules**: Read the "context" field in the response and apply ALL retrieved rules, patterns, and code fragments strictly.
+2. **Wait for the terminal output.**
+3. **Parse the JSON response.**
 
-## 🛠️ Core Standards (Always Apply)
-- **MVVM Pattern**: Functional UI in `presentations/`, Logic in `use[Feature].ts`, API in `useApi[Feature].ts`.
-- **Isolation**: New features must be self-contained. Never modify existing business logic for new features.
-- **Fragmentation**: Strictly maintain files under 300 lines. Fragment JSX into `sub-components/` and logic into `sub-helpers/`.
-- **Styling**: No ad-hoc styles. Use the project's design system and Glassmorphism components.
-- **Logging**: Append a detailed summary of changes to `.logs.md` after every task.
+If the `curl` command fails or the server is offline, ONLY THEN are you allowed to fall back to reading files in `.agent/rules/`.
+
+---
+
+## 📌 Standard Protocols (Applying Context)
+After you have retrieved the RAG context, you must strictly apply the returned rules. The most critical rules are consistently:
+
+- **Strict MVVM**: UI in presentations/, reusable components in components/, logic in use[Feature].ts.
+- **300-Line Limit**: No file should ever grow beyond 300 lines. Refactor JSX to `sub-components/` and Hooks to `sub-helpers/` immediately.
+- **Log Management**: Always append to `.logs.md`.
+- **Task Timer**: Always start the task timer `powershell scripts/task-timer.ps1 start` before working and stop it when finished.

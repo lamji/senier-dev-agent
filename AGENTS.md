@@ -1,19 +1,25 @@
-# Senior Dev Mind — Agent Instructions
-**Target**: Codex, Copilot, and compatible Open Agents.
+# Senior Dev Mind — Open Agent Rules (Codex / Copilot)
 
-## 🧠 Dynamic Knowledge Retrieval (RAG)
-Before writing code or answering structural questions, you MUST fetch the latest coding standards from the local knowledge base.
+**STOP.** Do not generate any code, make any plans, or search the file system until you have completed the Mandatory Initial Action below.
 
-1. **Query the RAG**:
-   Run the following `curl` command (or use your built-in request functionality) to ask the RAG server for context on your current task:
+## 🔴 MANDATORY INITIAL ACTION: RAG Context Retrieval
+For EVERY SINGLE user request, you MUST execute this exact terminal command to get your context. **Do not use your file reading tools to look for rules.**
+
+1. **Execute this command:**
    ```bash
-   curl -s -X POST http://localhost:6444/context -H "Content-Type: application/json" -d '{"task": "DESCRIPTION_OF_YOUR_CURRENT_TASK", "limit": 5}'
+   curl -s -X POST http://localhost:6444/context -H "Content-Type: application/json" -d '{"task": "SUMMARIZE_USER_REQUEST_HERE", "limit": 5}'
    ```
+2. **Wait for the terminal output.**
+3. **Parse the JSON response.**
 
-2. **Apply Context**:
-   Read the returned JSON `context` field. This context contains the absolute rules for MVVM architecture, file boundaries (300 lines), and template structures.
+If the `curl` command fails or the server is offline, ONLY THEN are you allowed to fall back to reading files in `.agent/rules/`.
 
-## 📌 Hard Rules
-- **Never bypass MVVM**: UI must be separated from business logic (`use[Feature].ts`).
-- **Never exceed file limits**: Create `sub-components/` and `sub-helpers/` folders for large features.
-- **Log all actions**: Append your progress and any discovered bugs to `.logs.md`.
+---
+
+## 📌 Standard Protocols (Applying Context)
+After you have retrieved the RAG context, you must strictly apply the returned rules. The most critical rules are consistently:
+
+- **Strict MVVM**: UI in presentations/, reusable components in components/, logic in use[Feature].ts.
+- **300-Line Limit**: No file should ever grow beyond 300 lines. Refactor JSX to `sub-components/` and Hooks to `sub-helpers/` immediately.
+- **Log Management**: Always append to `.logs.md`.
+- **Task Timer**: Always start the task timer `powershell scripts/task-timer.ps1 start` before working and stop it when finished.
