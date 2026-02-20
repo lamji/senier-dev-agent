@@ -49,7 +49,8 @@ This repository includes pre-configured rule files for popular AI IDEs to automa
 
 - **Cursor**: `.cursorrules` instructs the agent to query the RAG for every task.
 - **Windsurf**: `.windsurfrules` ensures synchronization with the knowledge base.
-- **Roo Code / Cline**: `.clinerules` enforces the RAG search protocol and coding standards.
+- **Roo Code / Cline**: `.clinerules` enforces the RAG search protocol.
+- **Kilo Code**: `.kilocode/rules/rag-standard.md` provides deep integration for Kilo agents.
 
 When you open this project in any of these IDEs, the agent will see these instructions and automatically start using your "Senior Dev Mind".
 
