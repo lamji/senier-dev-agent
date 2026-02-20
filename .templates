@@ -1,0 +1,29 @@
+# Template Repository (.templates)
+
+This file stores reusable code structures and component templates established in previous tasks. The AI should refer to this file when requested to implement similar features across different projects or modules to maintain consistency.
+
+## Component Templates
+
+### [2026-02-20] GlobalAlert (Next.js + Redux)
+**Folder Structure**: `src/components/Providers/AlertProvider/`
+- **index.tsx**: UI element for the global alert (e.g., Shadcn Toast or Custom UI).
+- **useAlertProvider.ts**: Logic for managing alert state (Must use Redux).
+- **Redux Slice**: `src/lib/utils/redux/slices/alertSlice.ts`
+- **Isolation**: Uses `sub-components/` if the UI is complex.
+
+## Feature Templates
+
+### [2026-02-20] MVVM Feature Isolation (Login Example)
+**Folder Structure**: `src/presentations/[FeatureName]/`
+- **index.tsx**: The View (Functional component, no logic).
+- **use[Feature].ts**: The ViewModel (Hook for state/logic).
+- **useApi[Feature].ts**: The Model (API fetching logic).
+- **Integration**: Minimal one-line import in `src/app/[Route]/page.tsx`.
+
+### [2026-02-20] Glassmorphism Form (No-Carding)
+**Folder Structure**: `presentations/[Feature]/`
+- **Standard**: Replaces Shadcn `Card` with `div` for a lighter, premium feel.
+- **Header**: Uses `div` with `bg-background border border-border/40 shadow-xl rounded-xl`.
+- **Inputs**: Uses `bg-muted/20` for input fields (Input, Select, Textarea) to create a consistent "layered" aesthetic.
+- **Button**: Uses gradients (e.g., `bg-gradient-to-r from-amber-500 to-orange-500`) for primary actions.
+

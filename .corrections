@@ -1,0 +1,24 @@
+# AI Correction Logs (.corrections)
+
+This file tracks all corrections and behavioral adjustments requested by the USER. The AI must review this file at the start of every task to avoid repeating past mistakes.
+
+## Correction History
+
+### [2026-02-20]
+- **Memory Integrity**: **CRITICAL RULE**: Never overwrite `.agent/feature_memory.md`. ALWAYS append new analysis to the end of the file. Removing past memory is forbidden as it slows down analysis and destroys project history.
+- **Project Initialization**: **STRICT RULE**: Do NOT initialize projects in the current directory (`./`). ALWAYS use `npx create-next-app@latest project-name` to separate concerns and avoid merge/conflict issues with root-level configuration files (like `.agent`, `.logs.md`, etc.).
+- **MVP Validation**: **Strict Rule**: When building MVP, Mongoose is the ONLY DB driver. The AI MUST run `npm run lint` and `npm run build` and fix errors before handover. Temporary images (Unsplash) must be checked for `200 OK` status.
+- **Scalability Protocol**: Enforced strict scalability rules (Typing, Generic Components, Lazy Loading, Redux Partitioning). Every feature must be built assuming it will handle enterprise traffic (Pagination, Indexing, Centralized API).
+- **MVP Trigger**: Added strict "MVP Protocol". Whenever the user requests an "MVP" or "Fullstack" project, automatically initialize Next.js (App Router), MongoDB, Redux Toolkit, Shadcn UI, NextAuth, and Middleware. Adopt "Senior Dev + UI/UX Master" persona immediately.
+- **Folder Responsibility**: Corrected `presentations/` vs `components/` usage. `presentations/` is strictly for PAGE VIEWS (tied to routes). All reusable UI features (like the Booking Drawer) must live in `components/` (specifically `components/[FeatureName]/`).
+- **MVVM Mapping**: Corrected the AI on feature creation. For new features, always create new files/models/viewmodels instead of updating existing ones (unless it's an explicit "update feature" task).
+- **Rule Isolation**: Rules and folder structures must be strictly separated. Ensure "Coding Standards" and "Project Structure" live in different files.
+- **Fragmentation**: Enforced mandatory fragmentation into `sub-components/` and `sub-helpers/` for files exceeding 300 lines or complex JSX, applicable to both features and global components.
+- **Strict Adherence**: The AI must not invent its own patterns; it must strictly use the provided Next.js + Shadcn MVVM structure.
+- **Log Management**: Established mandatory root-level `.logs` and `.corrections` for persistent tracking.
+- **Project Readiness**: Corrected on log folder initialization. Do NOT create the `.logs/` folder until an actual project is being built. Use the `.logs` summary file for initial infrastructure setup.
+- **Image Sources (HARD CORRECTION — 2026-02-20)**: ❌ The AI incorrectly used the `generate_image` tool during MVP development which is slow, unreliable, and blocked progress entirely. ✅ HARD RULE ENFORCED: NEVER use `generate_image` during any MVP or development task. ALWAYS use Unsplash URLs (`https://images.unsplash.com/photo-[ID]?w=1200&q=80`) verified for `200 OK`. Fallback to `picsum.photos` if Unsplash is down. The rule is now permanently enforced in `mvp-protocol.md`.
+- **Log Boundary Confusion (CORRECTION — 2026-02-20)**: ❌ The AI initially created project-level logs without acknowledging the workspace-level log system. ✅ NEW RULE: Maintain workspace logs for cross-project history AND project-level logs for long-term project portability (10-year revisit rule).
+- **Next.js 16 Convention (CORRECTION — 2026-02-20)**: ❌ The AI used `middleware.ts` which is deprecated. ✅ Rule: Use `proxy.ts` and `proxy()` function for all Next.js 16 projects as identified in the deprecation warning.
+- **Zero Missed Instructions (CORRECTION — 2026-02-20)**: ❌ The AI set up Redux counter slice but forgot to create the **sample counter button/component** to demonstrate it working. The user asked for a "sample count of redux" which implies a visible, working demo — not just backend wiring. ✅ NEW RULE ADDED to `coding-standard.md`: Before executing, parse ALL instructions into a to-do checklist, prompt the user for approval, then complete every single item. No partial deliveries.
+- **Log History Destruction (HARD CORRECTION — 2026-02-20)**: ❌ The AI used `replace_file_content` on `.logs.md` and destroyed the entire original Infrastructure Setup log entry. Existing log history was permanently lost and had to be manually restored. ✅ HARD RULE ADDED to `coding-standard.md`: Logs are **APPEND ONLY**. The AI must **NEVER** remove, overwrite, or replace previous log entries. New entries must be appended to the end of the file. Destroying log history is a **CRITICAL VIOLATION**.
