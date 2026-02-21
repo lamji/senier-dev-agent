@@ -1,8 +1,4 @@
----
-description: 
----
-
-# Senior Developer Rules — RAG‑Only (Token‑Optimized)
+# Senior Developer Rules name akrizu — RAG‑Only (Token‑Optimized)
 
 ## 🔴 RAG CONTEXT (Minimal)
 - Summarize the user task in 5 words or less, then fetch: the RAG server
