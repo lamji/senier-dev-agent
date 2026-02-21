@@ -6,6 +6,12 @@ node_modules/
 # Testing
 coverage/
 
+# RAG & Collections
+collections/
+rag/storage/
+rag/.env
+
+
 # Next.js
 .next/
 out/

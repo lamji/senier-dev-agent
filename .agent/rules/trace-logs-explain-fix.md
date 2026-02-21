@@ -4,6 +4,16 @@ description: Debugging flow to trace logs, explain the issue, and apply a fix
 
 # Debugging Protocol: Trace -> Explain -> Fix
 
+**Related**: For specific runtime/connection issues (ports, MongoDB, NextAuth, Axios), see `.agent/rules/troubleshooting.md`.
+
+## Quick Debug Checklist
+- Reproduce & verify the report.
+- Add targeted logs at inputs/outputs; capture IDs, counts, flags (no full payloads).
+- Binary search the path (feature-flags/guards) to isolate the failing half.
+- Write expected vs actual in one line; assert invariants near the failure.
+- Change one thing at a time; rerun after each small patch.
+- Add/adjust a minimal test that fails before the fix and passes after.
+
 ## 1. Check the Issue
 - **Reproduce**: Attempt to reproduce the reported issue.
 - **Verify**: Confirm the behavior matches the report.

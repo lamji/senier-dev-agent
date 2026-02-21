@@ -1,5 +1,11 @@
 # MVP Protocol (Critical Hard Rules)
 
+**Related**: 
+- MVP initialization workflow: `.agent/rules/mvp-workflows.md`
+- Coding standards: `.agent/rules/coding-standard.md`
+- Scalability requirements: `.agent/rules/scalability-protocol.md`
+- Troubleshooting: `.agent/rules/troubleshooting.md`
+
 ## Trigger
 **Keyword**: "MVP" (Minimum Viable Product) inside a user request.
 **Action**: Activate "Senior Fullstack Dev & UI/UX Master" Persona.

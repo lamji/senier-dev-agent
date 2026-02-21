@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RAG Control Panel</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+        <div>
+          <h1>🧠 RAG Control Panel</h1>
+          <p class="subtitle">Manage your RAG Stack Services</p>
+        </div>
+        <button class="btn btn-settings" id="openSettings" style="background: #3498db; color: white; padding: 8px 16px;">
+          <span class="btn-icon">⚙️</span> Settings
+        </button>
+      </div>
+    </header>
+
+    <main>
+      <div class="xampp-layout">
+        <div class="control-panel">
+          <div class="panel-header">
+            <h2>Services</h2>
+            <button class="btn btn-danger btn-kill-all" id="killAll">
+              <span class="btn-icon">⚠</span> Kill All Processes
+            </button>
+          </div>
+          <div class="kill-all-output" id="killAllOutput" style="display: none;">
+            <div class="kill-all-header">
+              <strong>Kill All Output</strong>
+              <button class="btn-close-output" id="closeKillOutput">×</button>
+            </div>
+            <div class="kill-all-logs" id="killAllLogs"></div>
+          </div>
+          
+          <!-- RAG Utilities -->
+          <div class="rag-utilities">
+            <h3 style="margin: 15px 20px 10px; color: #2c3e50; font-size: 1rem;">RAG Utilities</h3>
+            <div style="padding: 0 20px 15px;">
+              <select id="ragUtilitySelect" style="width: 100%; padding: 8px; border: 1px solid #bdc3c7; border-radius: 4px; margin-bottom: 10px;">
+                <option value="">-- Select Command --</option>
+                <option value="ingest">Ingest - Load knowledge base</option>
+                <option value="query">Query - Test RAG search</option>
+                <option value="status">Status - Check collection stats</option>
+                <option value="reset">Reset - Clear collection</option>
+                <option value="sync">Sync - One-time sync</option>
+                <option value="sync:file">Sync File - Sync specific file</option>
+                <option value="memory:save">Memory Save - Save conversation</option>
+              </select>
+              <button class="btn btn-primary" id="runRagUtility" style="width: 100%; background: #9b59b6; margin-bottom: 10px;" disabled>
+                <span class="btn-icon">▶</span> Run Command
+              </button>
+              <div class="rag-utility-terminal" id="ragUtilityTerminal" style="display: none;">
+                <div style="background: #34495e; padding: 6px 10px; display: flex; justify-content: space-between; align-items: center;">
+                  <span style="color: #ecf0f1; font-size: 0.85rem; font-weight: 600;">Command Output</span>
+                  <button class="btn-close-output" id="closeRagUtility" style="font-size: 1.2rem;">×</button>
+                </div>
+                <div id="ragUtilityLogs" style="background: #1a252f; color: #ecf0f1; padding: 10px; max-height: 200px; overflow-y: auto; font-family: 'Consolas', monospace; font-size: 0.85rem;"></div>
+              </div>
+            </div>
+          </div>
+          <!-- Ollama Service -->
+          <div class="service-row" data-service="ollama">
+            <div class="service-info">
+              <div class="service-name">
+                <h3>Ollama Server</h3>
+                <span class="service-port">Port: 11434</span>
+              </div>
+              <div class="service-status">
+                <span class="status-indicator stopped"></span>
+                <span class="status-text">Stopped</span>
+              </div>
+            </div>
+            <div class="service-controls">
+              <button class="btn btn-start" data-action="start" data-service="ollama">
+                <span class="btn-icon">▶</span> Start
+              </button>
+              <button class="btn btn-stop" data-action="stop" data-service="ollama" disabled>
+                <span class="btn-icon">■</span> Stop
+              </button>
+              <button class="btn btn-force" data-action="force" data-service="ollama">
+                <span class="btn-icon">⚠</span> Force Stop
+              </button>
+            </div>
+          </div>
+
+          <!-- RAG Server -->
+          <div class="service-row" data-service="ragServer">
+            <div class="service-info">
+              <div class="service-name">
+                <h3>RAG Server</h3>
+                <span class="service-port">Port: 6444</span>
+              </div>
+              <div class="service-status">
+                <span class="status-indicator stopped"></span>
+                <span class="status-text">Stopped</span>
+              </div>
+            </div>
+            <div class="service-controls">
+              <button class="btn btn-start" data-action="start" data-service="ragServer">
+                <span class="btn-icon">▶</span> Start
+              </button>
+              <button class="btn btn-stop" data-action="stop" data-service="ragServer" disabled>
+                <span class="btn-icon">■</span> Stop
+              </button>
+              <button class="btn btn-force" data-action="force" data-service="ragServer">
+                <span class="btn-icon">⚠</span> Force Stop
+              </button>
+            </div>
+          </div>
+
+          <!-- Sync Watcher -->
+          <div class="service-row" data-service="syncWatcher">
+            <div class="service-info">
+              <div class="service-name">
+                <h3>Sync Watcher</h3>
+                <span class="service-port">File Watcher</span>
+              </div>
+              <div class="service-status">
+                <span class="status-indicator stopped"></span>
+                <span class="status-text">Stopped</span>
+              </div>
+            </div>
+            <div class="service-controls">
+              <button class="btn btn-start" data-action="start" data-service="syncWatcher">
+                <span class="btn-icon">▶</span> Start
+              </button>
+              <button class="btn btn-stop" data-action="stop" data-service="syncWatcher" disabled>
+                <span class="btn-icon">■</span> Stop
+              </button>
+              <button class="btn btn-force" data-action="force" data-service="syncWatcher">
+                <span class="btn-icon">⚠</span> Force Stop
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="terminal-view">
+          <div class="terminal-tabs">
+            <button class="tab-btn active" data-terminal="all">All Logs</button>
+            <button class="tab-btn" data-terminal="ollama">Ollama</button>
+            <button class="tab-btn" data-terminal="ragServer">RAG Server</button>
+            <button class="tab-btn" data-terminal="syncWatcher">Sync Watcher</button>
+            <button class="btn-clear-active" id="clearActiveTerminal">
+              <span class="btn-icon">🗑</span> Clear
+            </button>
+          </div>
+          <div class="terminal-container active" data-terminal="all">
+            <div class="terminal-header">
+              <span>All Services - Terminal Output</span>
+              <span class="log-count">0 lines</span>
+            </div>
+            <div class="terminal" id="terminal-all"></div>
+          </div>
+          <div class="terminal-container" data-terminal="ollama">
+            <div class="terminal-header">
+              <span>Ollama Server - Terminal Output</span>
+              <span class="log-count">0 lines</span>
+            </div>
+            <div class="terminal" id="terminal-ollama"></div>
+          </div>
+          <div class="terminal-container" data-terminal="ragServer">
+            <div class="terminal-header">
+              <span>RAG Server - Terminal Output</span>
+              <span class="log-count">0 lines</span>
+            </div>
+            <div class="terminal" id="terminal-ragServer"></div>
+          </div>
+          <div class="terminal-container" data-terminal="syncWatcher">
+            <div class="terminal-header">
+              <span>Sync Watcher - Terminal Output</span>
+              <span class="log-count">0 lines</span>
+            </div>
+            <div class="terminal" id="terminal-syncWatcher"></div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <footer>
+      <p>RAG Control Panel v1.0.0 | Senior Dev Agent</p>
+    </footer>
+
+    <!-- Settings Modal -->
+    <div class="settings-modal" id="settingsModal" style="display: none;">
+      <div class="settings-overlay" id="settingsOverlay"></div>
+      <div class="settings-content">
+        <div class="settings-header">
+          <h2>⚙️ RAG Configuration Settings</h2>
+          <button class="btn-close-settings" id="closeSettings">×</button>
+        </div>
+        <div class="settings-body">
+          <div class="settings-section">
+            <h3>Qdrant Vector Database</h3>
+            <label>Qdrant URL</label>
+            <input type="text" id="qdrantUrl" placeholder="https://..." />
+            <label>Qdrant API Key</label>
+            <input type="password" id="qdrantApiKey" placeholder="eyJ..." />
+            <label>Collection Name</label>
+            <input type="text" id="qdrantCollection" placeholder="senior_dev_mind" />
+          </div>
+          <div class="settings-section">
+            <h3>Embedding Provider</h3>
+            <label>Provider</label>
+            <select id="embeddingProvider">
+              <option value="ollama">Ollama (Local)</option>
+              <option value="groq">Groq (Cloud)</option>
+              <option value="gemini">Gemini</option>
+              <option value="huggingface">HuggingFace</option>
+            </select>
+          </div>
+          <div class="settings-section">
+            <h3>API Keys</h3>
+            <label>Gemini API Key</label>
+            <input type="password" id="geminiApiKey" placeholder="AIza..." />
+            <label>Groq API Key</label>
+            <input type="password" id="groqApiKey" placeholder="gsk_..." />
+            <label>HuggingFace API Key</label>
+            <input type="password" id="huggingfaceApiKey" placeholder="hf_..." />
+          </div>
+          <div class="settings-section">
+            <h3>Ollama Configuration</h3>
+            <label>Ollama URL</label>
+            <input type="text" id="ollamaUrl" placeholder="http://localhost:11434" />
+            <label>Embed Model</label>
+            <input type="text" id="ollamaEmbedModel" placeholder="nomic-embed-text" />
+          </div>
+          <div class="settings-section">
+            <h3>Server Configuration</h3>
+            <label>RAG Server Port</label>
+            <input type="number" id="ragServerPort" placeholder="6444" />
+            <label>Knowledge Base Path</label>
+            <div style="display: flex; gap: 8px;">
+              <input type="text" id="knowledgeBasePath" placeholder="../.agent" style="flex: 1;" />
+              <button class="btn btn-secondary" id="browseKnowledgeBase" style="padding: 10px 16px; margin: 0;">
+                <span class="btn-icon">📁</span> Browse
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="settings-footer">
+          <button class="btn btn-primary" id="saveSettings">
+            <span class="btn-icon">💾</span> Save Settings
+          </button>
+          <button class="btn btn-secondary" id="resetSettings">
+            <span class="btn-icon">🔄</span> Reset to Defaults
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script src="renderer.js"></script>
+  </body>
+</html>

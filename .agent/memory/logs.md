@@ -84,7 +84,7 @@ Updated the project's coding standards to enforce the **DRY (Don't Repeat Yourse
 ### Build & Verification
 - `npm run lint`: Passed with 0 errors (clean up of unused imports).
 - `npm run build`: Exit Code 0 (Success).
-- `git`: Committed and ready for push if requested.
+- `git`: Committed and ready for push if requested. test run
 
 ---
 
@@ -925,8 +925,125 @@ Migrated the RAG System backend from the local Qdrant container to the AWS Cloud
 
 ### Added/Modified
 - rag/.env
-- rag/src/config.mjs
-- rag/src/qdrant.mjs
+
+---
+
+## [2026-02-21] - CRM Portal Admin Dashboard & Login Updates
+**Type**: Feature / Compliance
+**Status**: Completed
+
+### Description
+- Added Login MVVM flow (presentation, hook, /login route) with responsive design.
+- Refactored Admin Dashboard to remove Card components, enforce mobile-friendly layout, and fix runtime admin lookup.
+- Centralized API handlers under lib/api; build/lint/tests all passing.
+- Strengthened .windsurfrules with RAG/timer/checklist/verification guardrails and UI constraints.
+
+### Verification (The Wall)
+- npm run lint: pass (eslint . --max-warnings=0)
+- npm run build: pass (Exit code: 0)
+- node scripts/test-crm-api.mjs: pass
+
+### Corrections Applied This Session
+- Runtime error: usersQuery.data?.users.map() — guarded with ?? [] fallback.
+- Runtime error: availableAdminId useMemo — guarded with ?? [] fallback on users list.
+- Runtime error: messagesQuery.data?.messages.map() — guarded with ?? [] fallback.
+- Select item empty value — replaced with "all" sentinel; hook maps "all" → "" for API query.
+- Lint script tightened to eslint . --max-warnings=0 in package.json.
+- .windsurfrules appended with RAG gate, timer gate, checklist gate, verification wall, logging rule, no-cards/mobile constraints.
+
+---
+
+## [2026-02-21] - Admin Dashboard Revamp (Sidebar Nav + Views)
+**Type**: Feature / UI Refactor
+**Status**: Completed
+
+### Description
+- Replaced tab-based layout with sidebar nav (Dashboard + Clients).
+- Dashboard view: 4 stat tiles (Total Clients, Messages Sent, Emails Sent, Pending) + Recent Messages list.
+- Clients view: search, role filter, select-all, selection bar, client table with compose trigger.
+- Mobile: fixed top nav bar replaces sidebar on small screens.
+- Fragmented into sub-components: DashboardView.tsx, ClientsView.tsx (MVVM compliant, under 300 lines each).
+- All .map() calls guarded with ?? [] fallback.
+
+### Added/Modified
+- presentations/AdminDashboard/index.tsx
+- presentations/AdminDashboard/sub-components/DashboardView.tsx
+- presentations/AdminDashboard/sub-components/ClientsView.tsx
+
+### Verification (The Wall)
+- npm run lint: pass (eslint . --max-warnings=0)
+- npm run build: pass (Exit code: 0)
+- node scripts/test-crm-api.mjs: pass
+
+---
+
+## [2026-02-21] - API Test Scripts + Atlas MongoDB Connection
+**Type**: Testing / Infrastructure
+**Status**: Completed
+
+### Description
+- Extended `scripts/test-crm-api.mjs` with two new test functions:
+  - `testCreateClient()` — POST /api/users with name/email/phone/role, verifies via GET /api/users?search=
+  - `testSmsMessage()` — POST /api/messages with type=sms, asserts record created and checks status (pending=expected in dev, sent=Vonage active)
+- Fixed `proxy.ts` to exclude `/api` routes from auth redirect (was causing 307 → /login on all API calls).
+- Switched `MONGODB_URI` in `.env.local` from localhost to Atlas cluster (direct shard URI from book-me-event project).
+- Fixed `import.meta.url` Windows path comparison issue — replaced with unconditional `runTests()` call.
+- Fixed naming conflict: renamed `testSmsMessage` const to `smsPayload`.
+
+### Test Results (all passed ✅)
+```
+POST /api/users (admin)         ✅ Admin created, _id returned
+POST /api/users (user)          ✅ User created with phone
+GET  /api/users                 ✅ 2 users, total=2
+POST /api/users (create client) ✅ Jane Client created + verified in list
+GET  /api/users?search=...      ✅ Client found by name
+POST /api/messages (message)    ✅ status=sent, sentAt set
+GET  /api/messages              ✅ 1 message returned
+GET  /api/messages?userId=...   ✅ 1 message for user
+POST /api/messages (sms)        ✅ record created, status=pending (Vonage creds not set — expected)
+```
+
+### Modified Files
+- crm-portal/scripts/test-crm-api.mjs
+- crm-portal/proxy.ts
+- crm-portal/.env.local
+
+### Verification
+- npm run lint: pass
+- npm run build: pass (previous session)
+- node scripts/test-crm-api.mjs: EXIT 0, all 9 assertions passed
+
+---
+
+## [2026-02-21] - SMS Integration + Create Client Feature
+**Type**: Feature
+**Status**: Completed
+
+### Description
+- Added `sms` to `MessageType` union across: `lib/types/crm.ts`, `lib/models/Message.ts`, `hooks/useMessages.ts`, `lib/api/messages.ts`.
+- Created `lib/sms/vonage.ts` — Vonage free-tier SMS sender (graceful no-op if credentials not set).
+- Wired `sendSms` into `lib/api/messages.ts` POST handler: fires on `type === "sms"` if user has phone.
+- Added SMS option to `ComposeDialog.tsx` (Smartphone icon, `value="sms"`).
+- Created `CreateClientDialog.tsx` sub-component: form with name, email, phone, role → POST `/api/users`.
+- Wired `CreateClientDialog` into `ClientsView.tsx` with `onClientCreated → usersQuery.refetch()`.
+- Added Vonage env vars placeholder to `.env.local`.
+
+### Added/Modified
+- lib/types/crm.ts
+- lib/models/Message.ts
+- hooks/useMessages.ts
+- lib/api/messages.ts
+- lib/sms/vonage.ts (new)
+- presentations/AdminDashboard/sub-components/ComposeDialog.tsx
+- presentations/AdminDashboard/sub-components/CreateClientDialog.tsx (new)
+- presentations/AdminDashboard/sub-components/ClientsView.tsx
+- presentations/AdminDashboard/index.tsx
+- .env.local
+
+### Verification (The Wall)
+- npm run lint: pass (eslint . --max-warnings=0)
+- npm run build: pass (Exit code: 0)
+- node scripts/test-crm-api.mjs: pass
 
 ---
 

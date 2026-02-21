@@ -68,6 +68,14 @@ This document outlines the rules and best practices for implementing the Model-V
 - **Style Isolation**: Use scoped CSS, CSS Modules, or strict naming conventions (BEM) to prevent style leakage.
 - **API Boundaries**: Clearly define public interfaces for Services and ViewModels. Internal implementation details should remain hidden (Encapsulation).
 
+## 6.1 Safe Refactor Checklist
+- Add/verify tests or lightweight assertions before changes; keep a green safety net.
+- Refactor in tiny steps (extract, rename, move) with checks between steps.
+- Preserve behavior: do not change data shapes or side effects unless explicitly intended.
+- Localize edits: keep logic in `/lib`, UI in components, side-effects in hooks; avoid cross-cutting moves.
+- Measure impact when relevant: render counts (React DevTools), bundle size, and hot-path latency.
+- DRY with intent: extract only when used 3+ times (aligns with scalability protocol), avoid premature abstraction.
+
 ## 7. Feature Development & Isolation
 - **Create vs Update**: For new features, always CREATE new files (Models, ViewModels, Views). Never update existing business logic files to accommodate a new feature.
 - **Directory Isolation**: Create a dedicated folder for each new feature. Never mix unrelated code in the same directory.
@@ -77,13 +85,7 @@ This document outlines the rules and best practices for implementing the Model-V
 - **Modular Integration**: Design features to be modular so they can be added or removed by deleting their folder and a single import line.
 
 ## 8. Troubleshooting & Port Recovery
-- **Zombie Process Cleanup**: If a previous AI session leaves an `npm run dev` process running, it MUST be killed using these commands:
-    - **PowerShell (Recommended)**: `Get-Process -Name "node" -ErrorAction SilentlyContinue | Stop-Process -Force`
-    - **Identify by Port**: `netstat -ano | findstr ":3000"` then `Stop-Process -Id <PID> -Force`
-    - **CMD Fallback**: `taskkill /F /IM node.exe`
-- **Next.js Dev Lock**: If `next dev` fails with "Unable to acquire lock", the lock file MUST be deleted:
-    - `Remove-Item -Path "path/to/project/.next/dev/lock" -Force`
-- **Port Conflict Awareness**: If port 3000 is blocked, never try to use 3001. Fix the blockage at 3000 first.
+**See**: `.agent/rules/troubleshooting.md` for detailed zombie process cleanup, port recovery, and runtime issue resolution.
 ## 9. Admin & UI Rules
 - **UI Component Usage**:
   - **Forbid `Card` (Shadcn)**: Do NOT use the Shadcn `Card` component for layouts or grouping unless explicitly requested by the USER. Use native `div` with custom CSS or other layout components.

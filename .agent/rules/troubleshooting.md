@@ -3,6 +3,8 @@
 This document is the **first stop** when debugging runtime, connection, or process issues.
 All AI models MUST consult this file BEFORE attempting any fix independently.
 
+**Related**: For systematic debugging workflow, see `.agent/rules/trace-logs-explain-fix.md`.
+
 ---
 
 ## 1. Zombie Process & Port Blocking

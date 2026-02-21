@@ -4,9 +4,13 @@ description: Workflow for creating new features with isolation and impact analys
 
 # Feature Creation Protocol: Study -> Audit -> Isolate -> Implement
 
+**Related**: 
+- Implementation standards: `.agent/rules/coding-standard.md`
+- Scalability requirements: `.agent/rules/scalability-protocol.md`
+
 ## 1. Identify and Study the Feature
 - **Analyze Requirements**: Deeply understand the requested feature.
-- **Identify Components**: Determine which Models, ViewModels, and Views are needed.
+- **Identify Components**: Determine which Models, ViewModels, and Views are needed and if needed check the template for any useful codes `.agent\template` and `.agent\rules\template-lookup.md`.
 
 ## 2. Check Context and Changelogs
 - **Audit Logs**: Check `.logs` or relevant changelogs in the project to see if this feature impacts previous changes.

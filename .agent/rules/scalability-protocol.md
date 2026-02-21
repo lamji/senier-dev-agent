@@ -1,5 +1,7 @@
 # Scalability Protocol (Critical Hard Rules)
 
+**Related**: Implementation standards in `.agent/rules/coding-standard.md`.
+
 ## 0. Introduction
 Scalability is not an afterthought; it is the foundation. This protocol defines the **Critical Hard Rules** that ensure the application can grow from an MVP to an Enterprise solution without refactoring the core architecture.
 
