@@ -152,11 +152,15 @@ wsl -e bash -c "echo 'net.ipv4.ip_forward = 1' | sudo tee -a /etc/sysctl.conf &&
 
 ## Debugging Checklist for Future Issues
 
-1. **Reproduce**: Can you reproduce the reported issue?
-2. **Add Logs**: Add targeted logs at inputs/outputs
-3. **Isolate**: Binary search the execution path
-4. **Explain**: Determine exact root cause
-5. **Fix**: Address root cause, not just symptoms
-6. **Verify**: Test the fix works end-to-end
+1. **Internal Audit FIRST**: Before checking external services (APIs, DB, DNS), verify the internal environment:
+   - Is IPv4/IPv6 being parsed correctly?
+   - Are the .env connection strings confirmed via external tools (e.g. Compass)?
+   - Is there a variable shadowing conflict (e.g. `process` vs `proc`)?
+2. **Reproduce**: Can you reproduce the reported issue?
+3. **Add Logs**: Add targeted logs at inputs/outputs
+4. **Isolate**: Binary search the execution path
+5. **Explain**: Determine exact root cause
+6. **Fix**: Address root cause, not just symptoms
+7. **Verify**: Test the fix works end-to-end
 
 This debugging process transformed a silent-failing system into a fully observable one with complete execution traceability.

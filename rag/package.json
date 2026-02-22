@@ -12,7 +12,8 @@
     "sync": "node src/sync.mjs",
     "sync:watch": "node src/sync.mjs --watch",
     "sync:file": "node src/sync.mjs --file",
-    "memory:save": "node src/memory.mjs"
+    "memory:save": "node src/memory.mjs",
+    "validate:patterns": "node ../scripts/check-patterns.js src"
   },
   "dependencies": {
     "@google/genai": "^1.42.0",

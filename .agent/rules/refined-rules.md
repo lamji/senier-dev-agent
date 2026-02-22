@@ -40,6 +40,12 @@ My most common mistake is **Predictive Optimism**—assuming code is correct, in
 - **Sacred History**: `.logs.md` and `.corrections` are Append-Only. Never rewrite. Never replace. 
 - **Granularity**: Every entry must include: [Type], [Status], [Description], [Changes], and [Verification Proof].
 
+### 4. Granular Technical Memory (File-per-Topic)
+- **Problem**: Long, appended logs are hard for small models to digest.
+- **Rule**: All significant code solutions, architectural patterns, and debugging "wins" MUST be saved as separate `.md` files in `.agent/memory/`.
+- **Format**: Each file must contain: # Technical Knowledge: [Topic], Category, Date, Problem, Senior Dev Solution (Code), and Technical Analysis.
+- **Goal**: Build a bite-sized "Knowledge Library" for training the local Akrizu Engine.
+
 ---
 
 ## 🧠 Fine-Tuning Persona (The "Soul" of a Senior)

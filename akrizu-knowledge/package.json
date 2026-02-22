@@ -1,0 +1,30 @@
+{
+  "name": "senior-dev-mind",
+  "version": "1.0.0",
+  "description": "RAG-powered Senior Dev Mind — Rules, Workflows & Templates Knowledge Base",
+  "type": "module",
+  "scripts": {
+    "ingest": "node src/ingest.mjs",
+    "query": "node src/query.mjs",
+    "serve": "node src/server.mjs",
+    "status": "node src/status.mjs",
+    "reset": "node src/reset.mjs",
+    "sync": "node src/sync.mjs",
+    "sync:watch": "node src/sync.mjs --watch",
+    "sync:file": "node src/sync.mjs --file",
+    "memory:save": "node src/memory.mjs",
+    "validate:patterns": "node ../scripts/check-patterns.js src"
+  },
+  "dependencies": {
+    "@google/genai": "^1.42.0",
+    "@pinecone-database/pinecone": "^7.1.0",
+    "@qdrant/js-client-rest": "^1.12.0",
+    "chalk": "^5.3.0",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.0",
+    "glob": "^11.0.0",
+    "groq-sdk": "^0.8.0",
+    "node-fetch": "^3.3.2",
+    "openai": "^6.22.0"
+  }
+}

@@ -26,13 +26,10 @@ src/
 │           ├── sub-components/ # fragmented UI if needed
 │           └── sub-helpers/    # fragmented logic if needed
 │
-├── presentations/            # THE VIEW & VIEWMODEL LAYER (MVVM CORE)
-│   └── [FeatureName]/        # e.g., Login/
-│       ├── index.tsx         # THE VIEW: Functional component (UI only)
-│       ├── use[Feature].ts   # THE VIEWMODEL: Handles state and business logic
-│       ├── useApi[Feature].ts # THE MODEL: Handles API calls/data fetching
-│       ├── sub-components/   # Internal fragmented UI components
-│       └── sub-helpers/      # Internal logic helper functions
+### presentations/ (MVVM Core: hooks, models, views)
+- **THE VIEW & VIEWMODEL LAYER (MVVM CORE)**
+- Contains: `index.tsx` (View), `use[Feature].ts` (ViewModel: hooks), `useApi[Feature].ts` (Model: models)
+- Sub-folders: `sub-components/`, `sub-helpers/`
 │
 ├── lib/                      # GLOBAL LOGIC LAYER
 │   ├── hooks/                # Global reusable hooks

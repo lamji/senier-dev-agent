@@ -1056,3 +1056,42 @@ Changed the default EMBEDDING_PROVIDER in the RAG server from ollama to groq. Th
 
 ### Added/Modified
 - rag/.env
+
+---
+
+## [2026-02-22] - RAG Protocol Refinement & Groq Integration
+**Type**: Infrastructure / AI Persona
+**Status**: Completed
+
+### Description
+Integrated the Groq API for ultra-fast model responses and merged local Ollama models into a unified gateway. Implemented the "Akrizu Agent" toggle which strictly enforces a Token-Optimized, RAG-Only protocol. Refined the RAG server endpoints to support GET-only clients and fixed specific indexing issues for internal npm packages.
+
+### Added/Modified
+- `akrizu-knowledge/src/server.mjs`: Added `GET /rules`, `GET /context`, and `GET /context/compressed` endpoints.
+- `akrizu-knowledge/src/controllers/gatewayController.mjs`: Implemented Groq routing and unified model response mapping.
+- `akrizu-knowledge/src/helpers/context-loader.mjs`: Fixed `npm-packages/index.md` indexing omission and improved deduplication.
+- `akrizu-knowledge/src/qdrant.mjs`: Added `scrollAll` for rule discovery without embeddings.
+- Full re-ingestion of 387 knowledge chunks (npm packages, debugging, scalability, coding standards).
+
+### Technical Details (The Akrizu Engine)
+- **RAG-Only Protocol**: Agents are now instructed to summarize tasks in 5 words or less before fetching context via `GET http://localhost:6444/context/compressed?task=...`.
+- **Exact Code (Context Loader Fix)**:
+```javascript
+// akrizu-knowledge/src/helpers/context-loader.mjs
+const adminChunks = isAdminTask(task) ? [
+  ...(await scrollByFile("npm-packages/index.md")),
+  ...(await scrollByFile("npm-packages/admin-ui-1.md")),
+] : [];
+```
+- **Exact Code (GET Endpoints)**:
+```javascript
+// akrizu-knowledge/src/server.mjs
+app.get("/context/compressed", contextController.getCompressedContext);
+app.get("/context", contextController.getContext);
+app.get("/rules", statsController.getRules);
+```
+
+### Verification
+- **Semantic Search**: Confirmed "debugging protocol" and "available npm packages" return the correct `[rules]` and `[npm-packages]` chunks.
+- **Point Count**: Qdrant collection `senior_dev_mind` updated to 387 points.
+- **UI**: "Use Akrizu Agent" toggle correctly triggers the specialized system prompt.

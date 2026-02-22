@@ -14,6 +14,9 @@ const CATEGORY_MAP = {
   'rules': 'rule',
   'workflows': 'workflow',
   'template': 'template',
+  'npm-packages': 'package',
+  'memory': 'memory',
+  'qa': 'qa',
 };
 
 function detectCategory(filePath) {
@@ -32,17 +35,17 @@ const TAG_KEYWORDS = {
   api: ['rest', 'fetch', 'axios', 'http', 'crud', 'get', 'post', 'put', 'delete', 'endpoint'],
   auth: ['nextauth', 'login', 'session', 'token', 'jwt', 'middleware', 'auth', 'password'],
   database: ['mongodb', 'mongoose', 'schema', 'collection', 'query', 'index', 'atlas'],
-  debugging: ['debug', 'trace', 'error', 'fix', 'bug', 'troubleshoot', 'log', 'issue'],
-  mvvm: ['mvvm', 'viewmodel', 'model', 'view', 'presentation', 'separation'],
+  debugging: ['debug', 'trace', 'error', 'fix', 'bug', 'troubleshoot', 'log', 'issue', 'internal audit', 'reproduce', 'binary search', 'root cause'],
+  mvvm: ['mvvm', 'viewmodel', 'model', 'view', 'presentation', 'separation', 'study', 'audit', 'isolate', 'implement'],
   redux: ['redux', 'slice', 'store', 'dispatch', 'action', 'reducer', 'toolkit'],
-  testing: ['test', 'lint', 'build', 'verify', 'validate', 'jest', 'vitest'],
-  security: ['security', 'pci', 'encryption', 'xss', 'csrf', 'cors', 'sanitize', 'rate limit'],
-  admin: ['admin', 'dashboard', 'sidebar', 'table', 'manage'],
+  testing: ['test', 'lint', 'build', 'verify', 'validate', 'jest', 'vitest', 'test:api', 'commit message'],
+  security: ['security', 'pci', 'encryption', 'xss', 'csrf', 'cors', 'sanitize', 'rate limit', 'aes-256', 'bcrypt', 'never store pan', 'zod'],
+  admin: ['admin', 'dashboard', 'sidebar', 'table', 'manage', 'glassmorphism', '10px blur', '2-link', 'desktop-first'],
   booking: ['booking', 'event', 'reservation', 'schedule', 'calendar'],
   performance: ['performance', 'lazy', 'dynamic import', 'optimization', 'cache', 'ssr', 'server component'],
-  ui_ux: ['glassmorphism', 'animation', 'framer', 'hover', 'micro-interaction', 'responsive', 'premium'],
-  structure: ['folder', 'directory', 'structure', 'organization', 'architecture', 'project-structure'],
-  scalability: ['scalability', 'scale', 'growth', 'modular', 'barrel', 'dry', '3-use'],
+  ui_ux: ['glassmorphism', 'animation', 'framer', 'hover', 'micro-interaction', 'responsive', 'premium', '10px blur', 'rounded corners'],
+  structure: ['folder', 'directory', 'structure', 'organization', 'architecture', 'project-structure', 'mvvm', 'template lookup'],
+  scalability: ['scalability', 'scale', 'growth', 'modular', 'barrel', 'dry', '3-use', 'three', 'strict', 'typescript'],
 };
 
 function detectTags(content) {
@@ -78,6 +81,7 @@ function detectPriority(content, category) {
 /**
  * Split a markdown file into chunks by ## headers.
  * Each chunk includes the parent # header for context.
+ * Preserves critical keywords and ensures semantic completeness.
  * @param {string} content - Full markdown content
  * @param {string} filePath - Source file path
  * @returns {Array<{section: string, content: string, lineStart: number}>}
@@ -89,18 +93,18 @@ function splitBySection(content, filePath) {
   let currentSection = 'Introduction';
   let currentLines = [];
   let lineStart = 1;
+  let frontmatterEnd = 0;
 
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i];
-
-    // Skip YAML frontmatter
-    if (i === 0 && line.trim() === '---') {
-      const endIdx = lines.indexOf('---', 1);
-      if (endIdx > 0) {
-        i = endIdx;
-        continue;
-      }
+  // Skip YAML frontmatter
+  if (lines[0]?.trim() === '---') {
+    const endIdx = lines.indexOf('---', 1);
+    if (endIdx > 0) {
+      frontmatterEnd = endIdx + 1;
     }
+  }
+
+  for (let i = frontmatterEnd; i < lines.length; i++) {
+    const line = lines[i];
 
     // Detect # headers (top-level title)
     if (line.match(/^# /)) {
@@ -113,10 +117,10 @@ function splitBySection(content, filePath) {
       // Save previous chunk
       if (currentLines.length > 0) {
         const text = currentLines.join('\n').trim();
-        if (text.length > 30) { // Skip tiny fragments
+        if (text.length > 50) { // Increased minimum to preserve context
           chunks.push({
             section: currentSection,
-            content: `# ${currentH1}\n## ${currentSection}\n${text}`,
+            content: `# ${currentH1}\n## ${currentSection}\n\n${text}`,
             lineStart,
           });
         }
@@ -133,17 +137,17 @@ function splitBySection(content, filePath) {
   // Push last chunk
   if (currentLines.length > 0) {
     const text = currentLines.join('\n').trim();
-    if (text.length > 30) {
+    if (text.length > 50) {
       chunks.push({
         section: currentSection,
-        content: `# ${currentH1}\n## ${currentSection}\n${text}`,
+        content: `# ${currentH1}\n## ${currentSection}\n\n${text}`,
         lineStart,
       });
     }
   }
 
-  // If no sections found, return entire file as one chunk
-  if (chunks.length === 0 && content.trim().length > 30) {
+  // If no sections found, return entire file as one chunk (preserves all context)
+  if (chunks.length === 0 && content.trim().length > 50) {
     chunks.push({
       section: 'Full Document',
       content: content.trim(),

@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Akrizu Knowledge | Dashboard</title>
+    <style>
+        :root {
+            --bg-page: #f0f2f5;
+            --bg-sidebar: rgba(255, 255, 255, 0.3);
+            --bg-card: rgba(255, 255, 255, 0.7);
+            --accent: #2d2d2d;
+            --text-main: #1a1a1a;
+            --text-muted: #666666;
+            --border: rgba(0, 0, 0, 0.08);
+            --success: #10b981;
+            --error: #ef4444;
+            --warning: #f59e0b;
+            --glass: rgba(255, 255, 255, 0.5);
+            --shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: linear-gradient(135deg, #eef2f3 0%, #8e9eab 100%);
+            background-attachment: fixed;
+            color: var(--text-main);
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Sidebar - Slim & Glassy */
+        aside {
+            width: 80px;
+            background: var(--bg-sidebar);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 30px 0;
+            z-index: 100;
+        }
+
+        .logo {
+            margin-bottom: 50px;
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background: var(--accent);
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        nav li {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            background: transparent;
+        }
+
+        nav li span {
+            display: none;
+            /* Hide labels in slim sidebar */
+        }
+
+        nav li:hover {
+            background: var(--glass);
+            color: var(--accent);
+            transform: translateY(-2px);
+        }
+
+        nav li.active {
+            background: white;
+            color: var(--accent);
+            box-shadow: var(--shadow);
+        }
+
+        /* Tooltip-like behavior or indicator */
+        nav li.active::after {
+            content: '';
+            position: absolute;
+            left: -18px;
+            width: 4px;
+            height: 20px;
+            background: var(--accent);
+            border-radius: 0 4px 4px 0;
+        }
+
+        /* Main Content */
+        main {
+            flex: 1;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .header {
+            padding: 40px 60px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Fixed controls bar at top of chat */
+        .chat-header-controls {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(15px);
+            padding: 12px 40px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 24px;
+            position: sticky;
+            top: 0;
+            z-index: 60;
+        }
+
+        .status-badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+        }
+
+        .status-dot-pulse {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #cbd5e1;
+            position: relative;
+        }
+
+        .status-online .status-dot-pulse {
+            background: var(--success);
+            box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4);
+            animation: pulse-green 2s infinite;
+        }
+
+        @keyframes pulse-green {
+            0% {
+                box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4);
+            }
+
+            70% {
+                box-shadow: 0 0 0 10px rgba(16, 185, 129, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+            }
+        }
+
+        .header.scrolled {
+            padding: 15px 60px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .header h1 {
+            font-size: 32px;
+            font-weight: 800;
+            letter-spacing: -1px;
+            background: linear-gradient(90deg, #1a1a1a, #666);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            transition: all 0.3s ease;
+        }
+
+        .chat-controls-header {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-top: 15px;
+            background: rgba(255, 255, 255, 0.5);
+            padding: 8px 20px;
+            border-radius: 30px;
+            border: 1px solid var(--border);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+        }
+
+        .status-pill {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-muted);
+        }
+
+        .status-dot-mini {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #ccc;
+        }
+
+        .status-online .status-dot-mini {
+            background: var(--success);
+            box-shadow: 0 0 8px var(--success);
+        }
+
+        .status-offline .status-dot-mini {
+            background: var(--error);
+        }
+
+        #chat-greeting {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+            max-height: 500px;
+            opacity: 1;
+        }
+
+        #chat-greeting.hidden {
+            max-height: 0;
+            opacity: 0;
+            margin: 0;
+            padding: 0;
+            pointer-events: none;
+        }
+
+        .header p {
+            color: var(--text-muted);
+            margin-top: 8px;
+            font-size: 16px;
+        }
+
+        /* Sections */
+        .form-section {
+            display: none;
+            width: 100%;
+            height: 100%;
+            overflow-y: auto;
+        }
+
+        .form-section.active {
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Chat Layout - Premium Floating */
+        #chat-tab.active {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .chat-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 40px 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 32px;
+            scroll-behavior: smooth;
+        }
+
+        .message-wrapper {
+            width: 100%;
+            max-width: 850px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .message {
+            max-width: 85%;
+            padding: 20px 24px;
+            border-radius: 20px;
+            font-size: 15px;
+            line-height: 1.6;
+            box-shadow: var(--shadow);
+        }
+
+        .message-user {
+            align-self: flex-end;
+            background: var(--accent);
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+
+        .message-assistant {
+            align-self: flex-start;
+            background: white;
+            color: var(--text-main);
+            border-bottom-left-radius: 4px;
+            border: 1px solid var(--border);
+        }
+
+        /* Floating Input Tiered Design */
+        .chat-input-area {
+            padding: 30px 40px 50px 40px;
+            background: transparent;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .floating-input-container {
+            width: 100%;
+            max-width: 850px;
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--border);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .input-top-banner {
+            padding: 12px 24px;
+            background: rgba(0, 0, 0, 0.02);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .input-main {
+            padding: 18px 24px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .input-main input {
+            flex: 1;
+            border: none;
+            background: transparent;
+            font-size: 16px;
+            outline: none;
+            color: var(--text-main);
+            padding: 5px 0;
+        }
+
+        .input-actions {
+            padding: 12px 24px;
+            background: rgba(0, 0, 0, 0.02);
+            border-top: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .action-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: white;
+            border: 1px solid var(--border);
+            cursor: pointer;
+            color: var(--text-muted);
+            transition: all 0.2s;
+        }
+
+        .action-btn:hover {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+
+        .send-btn-large {
+            margin-left: auto;
+            background: var(--accent);
+            color: white;
+            border: none;
+            height: 40px;
+            width: 40px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Quick Action Pills */
+        .quick-actions {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .pill-btn {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border);
+            padding: 8px 18px;
+            border-radius: 20px;
+            font-size: 13px;
+            color: var(--text-muted);
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .pill-btn:hover {
+            background: white;
+            color: var(--accent);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Typography & Components Override */
+        .code-block {
+            background: #1e1e1e;
+            border-radius: 12px;
+            margin: 24px 0;
+            overflow: hidden;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .code-header {
+            background: #252526;
+            padding: 8px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #858585;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .copy-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #ccc;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-transform: none;
+            letter-spacing: 0;
+        }
+
+        .copy-btn:hover {
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+        }
+
+        .code-content {
+            padding: 20px;
+            color: #d4d4d4;
+            font-size: 13px;
+            line-height: 1.5;
+            font-family: 'Fira Code', 'Cascadia Code', Consolas, monospace;
+            overflow-x: auto;
+            white-space: pre;
+        }
+
+        #toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 1000;
+            background: #1a1a1a;
+            color: white;
+            border-radius: 12px;
+            padding: 12px 24px;
+            font-size: 14px;
+            transform: translateY(100px);
+            transition: transform 0.3s;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        #toast.visible {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+    </style>
+</head>
+
+<body>
+    <aside>
+        <div class="logo">
+            <div class="logo-icon">A</div>
+        </div>
+        <nav>
+            <ul>
+                <li id="nav-dashboard" onclick="showTab('dashboard')" title="Dashboard">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="14" width="7" height="7"></rect>
+                        <rect x="3" y="14" width="7" height="7"></rect>
+                    </svg>
+                    <span>Dashboard</span>
+                </li>
+                <li id="nav-chat" class="active" onclick="showTab('chat')" title="Chat">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path
+                            d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z">
+                        </path>
+                    </svg>
+                    <span>Chat</span>
+                </li>
+                <li id="nav-settings" onclick="showTab('settings')" title="Settings">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="3"></circle>
+                        <path
+                            d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33 1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82 1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z">
+                        </path>
+                    </svg>
+                    <span>Settings</span>
+                </li>
+            </ul>
+        </nav>
+    </aside>
+
+    <main id="main-content">
+        <!-- Dashboard Section -->
+        <section id="dashboard-tab" class="form-section">
+            <div class="header">
+                <h1>Hi Akhie</h1>
+                <p>Ready to build something solid today?</p>
+            </div>
+
+            <div class="grid">
+                <div class="card">
+                    <div class="card-label">RAG Server Status</div>
+                    <div class="card-value"><span class="status-dot status-online"></span>Online</div>
+                </div>
+                <div class="card">
+                    <div class="card-label">Qdrant Cloud</div>
+                    <div id="qdrant-status" class="card-value">Checking...</div>
+                </div>
+                <div class="card">
+                    <div class="card-label">Ollama (WSL/Local)</div>
+                    <div id="ollama-status" class="card-value">Active</div>
+                </div>
+            </div>
+
+            <div class="card"
+                style="margin: 0 40px; max-width: 600px; background: rgba(255,255,255,0.5); border: 1px solid var(--border);">
+                <div class="card-label">Gateway Info</div>
+                <div style="font-size: 14px; color: var(--text-muted); line-height: 1.6;">
+                    Connect Roo Code / Kilo to: <br>
+                    <code
+                        style="background: #ffffff; padding: 4px 8px; border-radius: 4px; color: #000; border: 1px solid var(--border);">http://localhost:6444/v1</code>
+                </div>
+            </div>
+        </section>
+
+        <!-- Chat Section -->
+        <section id="chat-tab" class="form-section active">
+            <div class="chat-header-controls">
+                <label
+                    style="display: flex; align-items: center; gap: 8px; font-size: 13px; cursor: pointer; color: var(--text-muted); font-weight: 500;">
+                    <input type="checkbox" id="agent-toggle" checked
+                        style="width: 16px; height: 16px; accent-color: var(--accent);">
+                    Akrizu Agent
+                </label>
+                <div style="width: 1px; height: 16px; background: var(--border);"></div>
+                <select id="model-select"
+                    style="background: transparent; border: none; font-size: 13px; color: var(--text-main); outline: none; cursor: pointer; font-weight: 600;">
+                    <option value="">Loading models...</option>
+                </select>
+                <div style="width: 1px; height: 16px; background: var(--border);"></div>
+                <div class="status-badge status-online" id="rag-status-container">
+                    <div class="status-dot-pulse"></div>
+                    <span id="rag-label">System Ready</span>
+                </div>
+            </div>
+
+            <div class="header" id="chat-greeting">
+                <h1>HI Akhie Ready to <br>Achieve Great Things?</h1>
+            </div>
+
+            <div class="chat-container">
+                <div id="chat-messages" class="chat-messages">
+                    <div class="message-wrapper">
+                        <div class="message message-assistant">
+                            Hey there! Senior Web Developer here. Ready to achieve great things today?
+                        </div>
+                    </div>
+                </div>
+
+                <div class="chat-input-area">
+                    <div class="floating-input-container">
+                        <div class="input-main">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent)"
+                                stroke-width="2">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <path d="M12 16v-4M12 8h.01"></path>
+                            </svg>
+                            <input type="text" id="chat-input"
+                                placeholder="Initiate a query or send a command to the AI..."
+                                onkeypress="if(event.key==='Enter') sendMessage()">
+                            <button class="send-btn-large" id="send-btn" onclick="sendMessage()">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2.5">
+                                    <line x1="22" y1="2" x2="11" y2="13"></line>
+                                    <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- Settings Section -->
+        <section id="settings-tab" class="form-section">
+            <div class="header">
+                <h1>Settings</h1>
+                <p>Update credentials (persists directly to VPS .env).</p>
+            </div>
+            <div class="card" style="margin: 0 40px; max-width: 600px;">
+                <div class="form-group">
+                    <label>QDRANT_URL</label>
+                    <input type="text" id="qdrant-url-input">
+                </div>
+                <div class="form-group">
+                    <label>QDRANT_API_KEY</label>
+                    <input type="password" id="qdrant-key-input">
+                </div>
+                <div class="form-group">
+                    <label>GROQ_API_KEY (Optional for Cloud Speed)</label>
+                    <input type="password" id="groq-key-input">
+                </div>
+                <button onclick="saveSettings()">Save Changes</button>
+            </div>
+        </section>
+    </main>
+
+    <div id="toast">Saved!</div>
+
+    <script>
+        function showTab(tab) {
+            document.querySelectorAll('.form-section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('nav li').forEach(l => l.classList.remove('active'));
+            document.getElementById(tab + '-tab').classList.add('active');
+            document.getElementById('nav-' + tab).classList.add('active');
+        }
+
+        async function loadStats() {
+            try {
+                const res = await fetch('/stats');
+                const data = await res.json();
+                document.getElementById('qdrant-status').innerHTML = '<span class="status-dot status-online"></span>' + (data.status || 'Ready');
+                document.getElementById('qdrant-url-input').value = data.url || '';
+            } catch (e) {
+                document.getElementById('qdrant-status').innerHTML = '<span class="status-dot status-offline"></span>Error';
+            }
+        }
+
+        async function loadModels() {
+            try {
+                const res = await fetch('/api/models');
+                const data = await res.json();
+                const select = document.getElementById('model-select');
+                const models = data.data || [];
+
+                if (models.length === 0) {
+                    select.innerHTML = '<option value="">No models found</option>';
+                    return;
+                }
+
+                select.innerHTML = models.map(m => {
+                    const provider = m.provider || 'Ollama';
+                    const name = (m.id || 'unknown').replace("groq:", "");
+                    return `<option value="${m.id}">${provider}: ${name}</option>`;
+                }).join('');
+                if (models.length > 0) select.value = models[0].id;
+                console.log("Models loaded:", models);
+            } catch (e) {
+                console.error("Model load error:", e);
+                document.getElementById('model-select').innerHTML = '<option value="">Error loading models</option>';
+            }
+        }
+
+        async function loadSettings() {
+            try {
+                const res = await fetch('/api/settings');
+                const data = await res.json();
+                if (data.qdrantUrl) document.getElementById('qdrant-url-input').value = data.qdrantUrl;
+                if (data.groqApiKey) document.getElementById('groq-key-input').placeholder = "Key provided (hidden)";
+            } catch (e) { console.error("Failed to load settings"); }
+        }
+
+        function appendMessage(role, content) {
+            const container = document.getElementById('chat-messages');
+            const wrapper = document.createElement('div');
+            wrapper.className = 'message-wrapper';
+            const msgDiv = document.createElement('div');
+            msgDiv.className = `message message-${role}`;
+            msgDiv.innerHTML = formatMarkdown(content);
+            wrapper.appendChild(msgDiv);
+            container.appendChild(wrapper);
+            container.scrollTop = container.scrollHeight;
+            return msgDiv;
+        }
+
+        function formatMarkdown(text) {
+            if (!text) return "";
+            // Detect code blocks
+            const parts = text.split('```');
+            let result = "";
+            for (let i = 0; i < parts.length; i++) {
+                if (i % 2 === 0) {
+                    result += parts[i].replace(/\n/g, '<br>');
+                } else {
+                    const lines = parts[i].split('\n');
+                    const lang = lines[0].trim() || 'code';
+                    const code = lines.slice(1).join('\n');
+                    result += `
+                        <div class="code-block">
+                            <div class="code-header">
+                                <span>${lang}</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <div class="code-content">${escapeHtml(code)}</div>
+                        </div>
+                    `;
+                }
+            }
+            return result;
+        }
+
+        function escapeHtml(text) {
+            const d = document.createElement('div');
+            d.textContent = text;
+            return d.innerHTML;
+        }
+
+        function copyCode(btn) {
+            const code = btn.closest('.code-block').querySelector('.code-content').innerText;
+            navigator.clipboard.writeText(code);
+            const originalText = btn.innerText;
+            btn.innerText = 'Copied!';
+            setTimeout(() => btn.innerText = originalText, 2000);
+        }
+
+        async function sendMessage() {
+            const input = document.getElementById('chat-input');
+            const btn = document.getElementById('send-btn');
+            const model = document.getElementById('model-select').value;
+            const useAkrizuAgent = document.getElementById('agent-toggle').checked;
+            const text = input.value.trim();
+
+            if (!text || !model) return;
+
+            // Hide greeting on first message
+            const greeting = document.getElementById('chat-greeting');
+            if (greeting && !greeting.classList.contains('hidden')) {
+                greeting.classList.add('hidden');
+            }
+
+            input.value = '';
+            input.disabled = true;
+            btn.disabled = true;
+
+            appendMessage('user', text);
+
+            const msgWrapper = document.createElement('div');
+            msgWrapper.className = 'message-wrapper';
+            const assistantDiv = document.createElement('div');
+            assistantDiv.className = 'message message-assistant';
+            assistantDiv.innerText = 'Thinking...';
+            msgWrapper.appendChild(assistantDiv);
+
+            const container = document.getElementById('chat-messages');
+            container.appendChild(msgWrapper);
+            container.scrollTop = container.scrollHeight;
+
+            try {
+                const response = await fetch('/v1/chat/completions', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ model, messages: [{ role: 'user', content: text }], useAkrizuAgent })
+                });
+                const data = await response.json();
+                const reply = data.choices?.[0]?.message?.content || "No response received.";
+                assistantDiv.innerHTML = formatMarkdown(reply);
+            } catch (e) {
+                assistantDiv.innerText = "Error: Check connection to server.";
+            } finally {
+                input.disabled = false;
+                btn.disabled = false;
+                input.focus();
+                container.scrollTop = container.scrollHeight;
+            }
+        }
+
+        async function saveSettings() {
+            const qdrantUrl = document.getElementById('qdrant-url-input').value;
+            const qdrantApiKey = document.getElementById('qdrant-key-input').value;
+            const groqApiKey = document.getElementById('groq-key-input').value;
+            try {
+                await fetch('/api/settings', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ qdrantUrl, qdrantApiKey, groqApiKey })
+                });
+                const t = document.getElementById('toast');
+                t.classList.add('visible');
+                setTimeout(() => t.classList.remove('visible'), 3000);
+                loadStats();
+                loadModels();
+            } catch (e) { alert("Save failed"); }
+        }
+
+        // Initialize
+        loadStats();
+        loadSettings();
+        loadModels();
+
+        // Update UI when toggle changes
+        document.getElementById('agent-toggle').addEventListener('change', (e) => {
+            const container = document.getElementById('rag-status-container');
+            const label = document.getElementById('rag-label');
+            if (e.target.checked) {
+                label.innerText = "System Ready";
+                container.className = "status-badge status-online";
+            } else {
+                label.innerText = "Casual Mode";
+                container.className = "status-badge";
+            }
+        });
+    </script>
+</body>
+
+</html>

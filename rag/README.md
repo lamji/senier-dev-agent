@@ -4,14 +4,9 @@ A RAG (Retrieval Augmented Generation) system that stores your development rules
 
 ## Architecture
 
-```
-.agent/rules/*.md ──┐
-.agent/workflows/*.md ──┤── Chunker ──→ Embedder ──→ Qdrant (senior_dev_mind)
-.agent/template/**/*.md ─┘                              ↕
-                                                  RAG Server (:6444)
-                                                      ↕
-                                          Any LLM Agent (Ollama/Groq/etc.)
-```
+See **[rag_architecture.md](../.gemini/antigravity/brain/1ac3f303-88f9-4e45-94d5-3f8dcfcfd113/rag_architecture.md)** for detailed flow diagrams. The simplified flow is:
+
+**AI Editor** → **RAG Server** → **Qdrant DB (Rules)** → **Groq (Compression)** → **AI Editor (Context)**
 
 ## Quick Start
 
@@ -134,12 +129,37 @@ See **[GUIDE.md](./GUIDE.md)** for:
 
 ## How It Works
 
-1. **Chunking**: Each `.md` file is split by `##` headers into independent sections
-2. **Metadata**: Each chunk gets auto-tagged with category, tags, and priority
-3. **Embedding**: Chunks are embedded using `nomic-embed-text` (768-dim) via Ollama
-4. **Storage**: Vectors + metadata stored in Qdrant with indexed filters
-5. **Search**: Semantic similarity search with optional category/tag/priority filters
-6. **Context**: The `/context` endpoint returns formatted rules ready for LLM injection
+```mermaid
+%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#EFEFEF', 'primaryTextColor': '#111', 'primaryBorderColor': '#333', 'lineColor': '#555', 'fontFamily': 'arial'}}}%%
+flowchart LR
+    %% Core Nodes (The "Happy Path")
+    AI["1. Your AI Editor\n(Windsurf/Roo)"]
+    API["2. RAG Server API\n(Node.js on Port 6444)"]
+    Qdrant[("3. Qdrant Database\n(Finds Similar Rules)")]
+    Groq["4. Groq Compressor\n(Shrinks Text)"]
+
+    %% Flow Sequence
+    AI -- "Task Question" --> API
+    API -- "Find rules about this task" --> Qdrant
+    Qdrant -. "Returns Markdown Rules" .-> API
+    API -- "Minify these rules" --> Groq
+    Groq -. "Returns squished text" .-> API
+    API -- "Final Answer" --> AI
+
+    %% Styling
+    style AI fill:#E3F2FD,stroke:#1565C0,stroke-width:3px,color:#000
+    style API fill:#FFF3E0,stroke:#EF6C00,stroke-width:3px,color:#000
+    style Qdrant fill:#E8F5E9,stroke:#2E7D32,stroke-width:3px,color:#000
+    style Groq fill:#F3E5F5,stroke:#7B1FA2,stroke-width:3px,color:#000
+```
+
+1. **Chunking**: Each `.md` file in `.agent` is split by headers into independent sections.
+2. **Embedding**: Before saving or searching, text is sent to **Ollama** (`nomic-embed-text`) to be converted into mathematical vectors.
+3. **Storage**: Vectors + metadata are stored in **Qdrant**.
+4. **Search**: The RAG server gets query strings from the AI agent and performs semantic similarity searches against Qdrant.
+5. **Compression**: To save tokens, the raw markdown rules are sent to **Groq** to be summarized and minified.
+6. **Context**: The `GET /context/compressed` endpoint returns formatted, token-efficient rules ready for LLM injection.
+7. **Syncing**: The `sync.mjs` background watcher detects any changes to your `.agent` files and automatically updates Qdrant in real-time.
 
 ## Categories & Tags
 
